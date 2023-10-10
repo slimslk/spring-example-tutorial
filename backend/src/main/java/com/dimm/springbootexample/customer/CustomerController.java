@@ -39,4 +39,9 @@ public class CustomerController {
             @RequestBody CustomerRegistrationRequest customerRegistrationRequest){
         customerService.updateCustomerById(id, customerRegistrationRequest);
     }
+
+    @GetMapping("/love")
+    public String sendMessageToLili() {
+        return "I Love YOU!";
+    }
 }

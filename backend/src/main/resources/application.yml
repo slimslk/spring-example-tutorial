@@ -6,8 +6,8 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/customer
-    username: admin
-    password: admin
+    username: dimm
+    password: cghbyu-trpfvgk
   jpa:
     hibernate:
       ddl-auto: validate

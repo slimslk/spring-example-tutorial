@@ -1,11 +1,11 @@
 services:
   db:
     container_name: postgres
-    image: postgres
+    image: postgres:15.4
     restart: unless-stopped
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: dimm
+      POSTGRES_PASSWORD: cghbyu-trpfvgk
       PGDATA: /data/postgres
     volumes:
       - db:/data/postgres
