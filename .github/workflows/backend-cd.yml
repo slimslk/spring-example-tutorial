@@ -48,7 +48,7 @@ jobs:
         run: |
           echo "Dockerrun.aws.json before updating"
           cat Dockerrun.aws.json
-          sed -i -E 's_(${{ secrets.DOCKERHUB_USERNAME }}/dimm-api:)([^"])*_\1'${BUILD_VERSION}'_' Dockerrun.aws.json
+          sed -i -E 's_(${{ secrets.DOCKERHUB_USERNAME }}/dimm-api:)([^"])*_\1'${{steps.build-version.outputs.BUILD_VERSION}}'_' Dockerrun.aws.json
           echo "Dockerrun.aws.json after updating"
           cat Dockerrun.aws.json
       - name: Deploy updated Dockerrun.aws.json file to AWS
