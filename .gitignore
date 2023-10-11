@@ -1,4 +1,4 @@
-Dockerrun.aws.json
+.DS_Store
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
