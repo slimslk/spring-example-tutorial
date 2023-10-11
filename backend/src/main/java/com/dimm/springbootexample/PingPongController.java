@@ -8,7 +8,7 @@ public class PingPongController {
 	private record PingPong(String response){};
 
 	@GetMapping("/ping")
-	public PingPong getPongGesponse(){
+	public PingPong getPongResponse(){
 		return new PingPong("pong");
 	}
 
