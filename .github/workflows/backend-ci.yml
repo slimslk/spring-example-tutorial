@@ -16,7 +16,7 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USERNAME: dimm
+          POSTGRES_USER: dimm
           POSTGRES_PASSWORD: cghbyu-trpfvgk
           POSTGRES_DB: customer
         options: >-
