@@ -16,8 +16,3 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-datasource:
-  url: jdbc:postgresql://localhost:5432/customer
-  username: admin
-  password: admin
-  driver-class-name:
