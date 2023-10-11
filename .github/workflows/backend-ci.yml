@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      working-directory: ./backend
     services:
       postgres:
         image: postgres:15.3
