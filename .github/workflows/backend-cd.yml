@@ -29,9 +29,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - name: Run echo command
-        run: echo "This is a test for bash"
       - name: Send Message to Slack that Deployment has started
+        working-directory: /
         run: >
           curl -X POST -H 'Content-type: application/json' --data
           '{"text":"Spring example deployment has started"}'
