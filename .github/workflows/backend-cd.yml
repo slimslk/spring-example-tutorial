@@ -51,7 +51,7 @@ jobs:
         run: echo "BUILD_VERSION=$(date '+%d.%m.%Y.%H.%M.%S')" >> $GITHUB_OUTPUT
       - name: Build package push with Maven
         run: mvn -ntp -B verify jib:build -Ddocker.image.tag=${{steps.build-version.outputs.BUILD_VERSION}}
-      - name: Send Message to Slack that Deployment has started
+      - name: Send Message to Slack that Build is completed and new image uploaded to dockerhub
         run: >
           curl -X POST -H 'Content-type: application/json' --data
           '{"text":"Build is completed and new image with tag: ${{steps.build-version.outputs.BUILD_VERSION}} uploaded to dockerhub"}'
@@ -74,7 +74,7 @@ jobs:
           version_label: ${{ steps.build-version.outputs.BUILD_VERSION }}
           region: ${{ secrets.AWS_REGION }}
           deployment_package: backend/Dockerrun.aws.json
-      - name: Send Message to Slack that Deployment has started
+      - name: Send Message to Slack that Deployment to AWS completed
         run: >
           curl -X POST -H 'Content-type: application/json' --data
           '{"text":"Deployment to AWS completed"}'
