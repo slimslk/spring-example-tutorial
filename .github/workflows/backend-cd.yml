@@ -30,8 +30,10 @@ jobs:
         working-directory: ./backend
     steps:
       - name: Send Message to Slack that Deployment has started
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Spring example deployment has started"}' https://hooks.slack.com/services/${{secrets.SLACK_WEBHOOK_TOKEN}}
+        run: >
+          curl -X POST -H 'Content-type: application/json' --data
+          '{"text":"Spring example deployment has started"}'
+          ${{ secrets.SLACK_WEBHOOK_TOKEN }}
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
@@ -49,8 +51,10 @@ jobs:
       - name: Build package push with Maven
         run: mvn -ntp -B verify jib:build -Ddocker.image.tag=${{steps.build-version.outputs.BUILD_VERSION}}
       - name: Send Message to Slack that Deployment has started
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Build is completed and new image with tag: ${{steps.build-version.outputs.BUILD_VERSION}} uploaded to dockerhub"}' https://hooks.slack.com/services/${{secrets.SLACK_WEBHOOK_TOKEN}}
+        run: >
+          curl -X POST -H 'Content-type: application/json' --data
+          '{"text":"Build is completed and new image with tag: ${{steps.build-version.outputs.BUILD_VERSION}} uploaded to dockerhub"}'
+          {{ secrets.SLACK_WEBHOOK_TOKEN }}
       - name: Update Dockerrun.aws.json file with new image tag
         run: |
           echo "Dockerrun.aws.json before updating"
@@ -70,8 +74,10 @@ jobs:
           region: ${{ secrets.AWS_REGION }}
           deployment_package: backend/Dockerrun.aws.json
       - name: Send Message to Slack that Deployment has started
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment to AWS completed"}' https://hooks.slack.com/services/${{secrets.SLACK_WEBHOOK_TOKEN}}
+        run: >
+          curl -X POST -H 'Content-type: application/json' --data
+          '{"text":"Deployment to AWS completed"}'
+          ${{ secrets.SLACK_WEBHOOK_TOKEN }}
       - name: Commit and push Dockerrun.aws.json
         run: |
           git config user.name github-actions
