@@ -2,11 +2,12 @@ name: Backend Package and Deploy to AWS
 
 on:
   push:
-    workflow-dispatch:
+    workflow_dispatch:
     branches:
       - release
-    path:
+    paths:
       - backend/**
+
 jobs:
   build:
     runs-on: ubuntu-latest
