@@ -31,9 +31,10 @@ jobs:
     steps:
       - name: Send Message to Slack that Deployment has started
         run: >
-          curl -X POST -H 'Content-type: application/json' --data
-          '{"text":"Spring example deployment has started"}'
-          ${{ secrets.SLACK_WEBHOOK_TOKEN }}
+          curl --help
+#          -X POST -H 'Content-type: application/json' --data
+#          '{"text":"Spring example deployment has started"}'
+#          ${{ secrets.SLACK_WEBHOOK_TOKEN }}
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
