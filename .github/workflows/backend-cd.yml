@@ -29,9 +29,9 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - name: Send Message to Slack that Deployment has started
-        run: >
-          curl --help
+#      - name: Send Message to Slack that Deployment has started
+#        run: >
+#          curl --help
 #          -X POST -H 'Content-type: application/json' --data
 #          '{"text":"Spring example deployment has started"}'
 #          ${{ secrets.SLACK_WEBHOOK_TOKEN }}
