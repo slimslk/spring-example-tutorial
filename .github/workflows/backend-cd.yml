@@ -29,13 +29,14 @@ jobs:
       run:
         working-directory: backend
     steps:
-#      - name: Send Message to Slack that Deployment has started
-#        run: >
-#          curl --help
-#          -X POST -H 'Content-type: application/json' --data
-#          '{"text":"Spring example deployment has started"}'
-#          ${{ secrets.SLACK_WEBHOOK_TOKEN }}
-      - uses: actions/checkout@v3
+      - name: Run echo command
+        run: echo "This is a test for bash"
+      - name: Send Message to Slack that Deployment has started
+        run: >
+          curl -X POST -H 'Content-type: application/json' --data
+          '{"text":"Spring example deployment has started"}'
+          ${{ secrets.SLACK_WEBHOOK_TOKEN }}
+      - uses: actions/checkout@v4
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -55,7 +56,7 @@ jobs:
         run: >
           curl -X POST -H 'Content-type: application/json' --data
           '{"text":"Build is completed and new image with tag: ${{steps.build-version.outputs.BUILD_VERSION}} uploaded to dockerhub"}'
-          {{ secrets.SLACK_WEBHOOK_TOKEN }}
+          ${{ secrets.SLACK_WEBHOOK_TOKEN }}
       - name: Update Dockerrun.aws.json file with new image tag
         run: |
           echo "Dockerrun.aws.json before updating"
