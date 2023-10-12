@@ -5,11 +5,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PingPongController {
-	private record PingPong(String response){};
+	private record PingPong(String response){}
+	private static int COUNT = 0;
 
 	@GetMapping("/ping")
 	public PingPong getPongResponse(){
-		return new PingPong("pong");
+		++COUNT;
+		return new PingPong("pong: " + COUNT);
 	}
 
 }
