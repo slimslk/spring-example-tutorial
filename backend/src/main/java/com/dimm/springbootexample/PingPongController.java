@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PingPongController {
 	private record PingPong(String response){}
-	private static int COUNT = 0;
+	private static int COUNT = 2;
 
 	@GetMapping("/ping")
 	public PingPong getPongResponse(){
