@@ -36,6 +36,11 @@ jobs:
           '{"text":"Spring example deployment has started"}'
           ${{ secrets.SLACK_WEBHOOK_TOKEN }}
       - uses: actions/checkout@v4
+      - name: Send message to Slack with commit and sha
+        run: >
+          curl -X POST -H 'Content-type: application/json' --data
+                    '{"text":":github: https://github.com/slimslk/spring-example-tutorial/commit/${{ github.sha }} - ${{ github.event.head_commit.message }}"}'
+                    ${{ secrets.SLACK_WEBHOOK_TOKEN }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
