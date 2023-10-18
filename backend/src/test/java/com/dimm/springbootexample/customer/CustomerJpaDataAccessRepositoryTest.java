@@ -51,7 +51,7 @@ class CustomerJpaDataAccessRepositoryTest {
 
 	@Test
 	void insertCustomer() {
-		Customer customer = Customer.builder().name("Dimm").email("dimm@gmail.com").age(10).build();
+		Customer customer = Customer.builder().name("Dimm").email("dimm@gmail.com").age(10).gender(CustomerGender.MALE).build();
 		underTest.insertCustomer(customer);
 		Mockito.verify(customerRepository).save(customer);
 	}
@@ -65,7 +65,7 @@ class CustomerJpaDataAccessRepositoryTest {
 
 	@Test
 	void updateCustomer() {
-		Customer customer = Customer.builder().id(1L).name("Dimm").email("dimm@gmail.com").age(10).build();
+		Customer customer = Customer.builder().id(1L).name("Dimm").email("dimm@gmail.com").age(10).gender(CustomerGender.MALE).build();
 		underTest.updateCustomer(customer);
 		Mockito.verify(customerRepository).save(customer);
 	}

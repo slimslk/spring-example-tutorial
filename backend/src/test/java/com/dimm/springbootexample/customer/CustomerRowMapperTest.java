@@ -19,6 +19,7 @@ class CustomerRowMapperTest {
 		Mockito.when(resultSet.getString("name")).thenReturn("Alex");
 		Mockito.when(resultSet.getString("email")).thenReturn("alex@gmail.com");
 		Mockito.when(resultSet.getInt("age")).thenReturn(22);
+		Mockito.when(resultSet.getString("gender")).thenReturn(String.valueOf(CustomerGender.MALE));
 
 		Customer actual = underTest.mapRow(resultSet, 1);
 		Customer expected = Customer.builder()
@@ -26,6 +27,7 @@ class CustomerRowMapperTest {
 				.name("Alex")
 				.email("alex@gmail.com")
 				.age(22)
+				.gender(CustomerGender.MALE)
 				.build();
 
 		assertThat(actual).isEqualTo(expected);
