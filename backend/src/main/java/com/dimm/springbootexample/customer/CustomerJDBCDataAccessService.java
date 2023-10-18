@@ -17,7 +17,7 @@ public class CustomerJDBCDataAccessService implements ICustomerDao{
 	@Override
 	public List<Customer> findAll() {
 		String sql = """
-				Select id, name, email, age from customer
+				Select id, name, email, age, gender from customer
 				""";
 		return jdbcTemplate.query(sql, customerRowMapper);
 	}
@@ -25,7 +25,7 @@ public class CustomerJDBCDataAccessService implements ICustomerDao{
 	@Override
 	public Optional<Customer> findCustomerById(Long id) {
 		String sql = """
-				SELECT id, name, email, age FROM customer WHERE id = ?
+				SELECT id, name, email, age, gender FROM customer WHERE id = ?
 				""";
 		return jdbcTemplate.query(sql, customerRowMapper, id).stream().findFirst();
 	}
@@ -51,13 +51,14 @@ public class CustomerJDBCDataAccessService implements ICustomerDao{
 	@Override
 	public void insertCustomer(Customer customer) {
 		String sql = """
-			INSERT INTO customer(name, email, age)
-			VALUES(?,?,?)
+			INSERT INTO customer(name, email, age, gender)
+			VALUES(?,?,?,?)
 			""";
 		int result = jdbcTemplate.update(sql,
 				customer.getName(),
 				customer.getEmail(),
-				customer.getAge());
+				customer.getAge(),
+				customer.getGender().name());
 	}
 
 	@Override
@@ -72,12 +73,13 @@ public class CustomerJDBCDataAccessService implements ICustomerDao{
 	public void updateCustomer(Customer customer) {
 		if(customer.getName()!=null && customer.getEmail()!=null && customer.getAge()!=0){
 			String sql = """
-				UPDATE customer SET (name, email, age) = (?,?,?) WHERE id = ?
+				UPDATE customer SET (name, email, age, gender) = (?,?,?,?) WHERE id = ?
 				""";
 			int result = jdbcTemplate.update(sql,
 					customer.getName(),
 					customer.getEmail(),
 					customer.getAge(),
+					customer.getGender().name(),
 					customer.getId());
 		}
 	}

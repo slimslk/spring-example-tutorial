@@ -13,4 +13,5 @@ public class CustomerRegistrationRequest {
     String name;
     String email;
     Integer age;
+    CustomerGender gender;
 }

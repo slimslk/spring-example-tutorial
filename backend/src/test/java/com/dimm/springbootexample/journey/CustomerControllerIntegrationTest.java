@@ -1,6 +1,7 @@
 package com.dimm.springbootexample.journey;
 
 import com.dimm.springbootexample.customer.Customer;
+import com.dimm.springbootexample.customer.CustomerGender;
 import com.dimm.springbootexample.customer.CustomerRegistrationRequest;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,14 +28,17 @@ public class CustomerControllerIntegrationTest {
 	void canRegisterACustomer() {
 		//create registration request
 		Faker faker = new Faker();
-		String name = faker.name().firstName();
-		String email = name+"_"+ UUID.randomUUID()+"@mymail.com";
-		int age = faker.number().numberBetween(20,70);
+		String firstName = faker.name().firstName();
+		String lastName = faker.name().lastName();
+		String email = firstName + "." + lastName + "@dimm.com";
+		CustomerGender gender = CustomerGender.MALE;
+		int age = faker.number().numberBetween(20, 70);
 
 		CustomerRegistrationRequest request = CustomerRegistrationRequest.builder()
-				.name(name)
+				.name(firstName + " " + lastName)
 				.email(email)
 				.age(age)
+				.gender(gender)
 				.build();
 
 		//send a post request
@@ -46,7 +50,7 @@ public class CustomerControllerIntegrationTest {
 				.exchange()
 				.expectStatus()
 				.isOk();
-		
+
 		//get all customers
 		List<Customer> customers = webTestClient.get()
 				.uri(CUSTOMER_URI)
@@ -60,14 +64,24 @@ public class CustomerControllerIntegrationTest {
 
 		//make sure that customer is present
 		Customer expected = Customer.builder()
-				.name(name)
+				.name(firstName + " " + lastName)
 				.email(email)
 				.age(age)
+				.gender(gender)
 				.build();
-		assertThat(customers).usingRecursiveFieldByFieldElementComparatorIgnoringFields("id").contains(expected);
+
+		Customer actual = customers.stream().filter(cus ->
+				cus.getName().equals(expected.getName()) &&
+				cus.getAge() == expected.getAge() &&
+				cus.getEmail().equals(expected.getEmail()) &&
+				cus.getGender().equals(expected.getGender())).findFirst().orElseThrow();
+
+		assertThat(actual.getName()).isEqualTo(expected.getName());
+		assertThat(actual.getAge()).isEqualTo(expected.getAge());
+		assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
+		assertThat(actual.getGender()).isEqualTo(expected.getGender());
 		//get customer by id
 
-		assert customers != null;
 		Long id = customers.stream()
 				.filter(c -> c.getEmail().equals(email))
 				.map(Customer::getId)
@@ -76,12 +90,13 @@ public class CustomerControllerIntegrationTest {
 
 		expected.setId(id);
 		webTestClient.get()
-				.uri(CUSTOMER_URI+"/{customerId}", id)
+				.uri(CUSTOMER_URI + "/{customerId}", id)
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus()
 				.isOk()
-				.expectBody(new ParameterizedTypeReference<Customer>() {})
+				.expectBody(new ParameterizedTypeReference<Customer>() {
+				})
 				.isEqualTo(expected);
 	}
 }

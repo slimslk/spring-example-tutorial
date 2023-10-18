@@ -51,6 +51,7 @@ class CustomerRepositoryTest extends AbstractTestcontainer {
 				.name(faker.name().fullName())
 				.email(faker.internet().emailAddress() + "-" + UUID.randomUUID())
 				.age(faker.number().numberBetween(10,90))
+				.gender(CustomerGender.MALE)
 				.build();
 	}
 }
