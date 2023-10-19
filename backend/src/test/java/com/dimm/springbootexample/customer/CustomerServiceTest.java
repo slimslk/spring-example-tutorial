@@ -138,7 +138,7 @@ class CustomerServiceTest {
 	void canUpdateCustomerByIdWhenNamesAreDifferent() {
 		Long id = 1L;
 		String email = "alex@gmail.com";
-		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", null, 23, CustomerGender.MALE);
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", null, null, null);
 		Customer customer = Customer.builder()
 				.id(id)
 				.name("Joe")
@@ -165,7 +165,7 @@ class CustomerServiceTest {
 		Long id = 1L;
 		String email = "alex@gmail.com";
 		String updatedEmail = "joe@gmail.com";
-		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(null, updatedEmail, 23, CustomerGender.MALE);
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(null, updatedEmail, null, null);
 		Customer customer = Customer.builder()
 				.id(id)
 				.name("Alex")
@@ -212,6 +212,32 @@ class CustomerServiceTest {
 		assertThat(capturedCustomer.getEmail()).isEqualTo(customer.getEmail());
 		assertThat(capturedCustomer.getAge()).isEqualTo(customerRegistration.getAge());
 		assertThat(capturedCustomer.getGender()).isEqualTo(customer.getGender());
+	}
+
+	@Test
+	void canUpdateCustomerByIdWhenGendersAreDifferent() {
+		Long id = 1L;
+		String email = "alex@gmail.com";
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(null, null, null, CustomerGender.FEMALE);
+		Customer customer = Customer.builder()
+				.id(id)
+				.name("Alex")
+				.email(email)
+				.age(23)
+				.gender(CustomerGender.MALE)
+				.build();
+		Mockito.when(customerDao.findCustomerById(id)).thenReturn(Optional.of(customer));
+		underTest.updateCustomerById(id, customerRegistration);
+
+		ArgumentCaptor<Customer> customerArgumentCaptor = ArgumentCaptor.forClass(Customer.class);
+		Mockito.verify(customerDao).updateCustomer(customerArgumentCaptor.capture());
+		Customer capturedCustomer = customerArgumentCaptor.getValue();
+
+		assertThat(capturedCustomer.getId()).isEqualTo(id);
+		assertThat(capturedCustomer.getName()).isEqualTo(customer.getName());
+		assertThat(capturedCustomer.getEmail()).isEqualTo(customer.getEmail());
+		assertThat(capturedCustomer.getAge()).isEqualTo(customer.getAge());
+		assertThat(capturedCustomer.getGender()).isEqualTo(customerRegistration.getGender());
 	}
 
 	@Test

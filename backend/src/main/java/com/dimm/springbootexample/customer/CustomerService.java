@@ -63,7 +63,7 @@ public class CustomerService {
 			customer.setEmail(customerRegistrationRequest.getEmail());
 			isChanged = true;
 		}
-		if (customer.getAge() != customerRegistrationRequest.getAge()) {
+		if (customerRegistrationRequest.getAge() != null && customer.getAge() != customerRegistrationRequest.getAge()) {
 			customer.setAge(customerRegistrationRequest.getAge());
 			isChanged = true;
 		}
