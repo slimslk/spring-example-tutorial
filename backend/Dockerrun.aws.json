@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "dimm-api",
-      "image": "slimslk/dimm-api:18.10.2023.19.49.15",
+      "image": "slimslk/dimm-api:19.10.2023.22.10.54",
       "essential": true,
       "memory": 512,
       "portMappings": [
