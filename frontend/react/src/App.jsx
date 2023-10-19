@@ -43,7 +43,7 @@ function App() {
 
   return(
   <SidebarWithHeader>
-    <Wrap spacing={75}>
+    <Wrap spacing={75} justify='center'>
       {customers.map((customer, index) => (
         <WrapItem key={index}>
           <UserCard {...customer} />
