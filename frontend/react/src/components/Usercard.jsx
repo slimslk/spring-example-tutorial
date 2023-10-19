@@ -9,12 +9,14 @@ import {
   Flex,
   Text,
   Stack,
-  Button,
   useColorModeValue,
   Tag,
 } from '@chakra-ui/react'
 
-export default function UserCard({id, name, email, age}) {
+export default function UserCard({id, name, email, age, gender}) {
+  
+  const userGender = gender === 'MALE' ? 'men' : 'women';
+
   return (
     <Center py={6}>
       <Box
@@ -37,7 +39,7 @@ export default function UserCard({id, name, email, age}) {
           <Avatar
             size={'xl'}
             src={
-              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&ixid=eyJhcHBfaWQiOjE3Nzg0fQ'
+              `https://randomuser.me/api/portraits/${userGender}/${id}.jpg`
             }
             css={{
               border: '2px solid white',
@@ -46,7 +48,7 @@ export default function UserCard({id, name, email, age}) {
         </Flex>
 
         <Box p={6}>
-          <Stack spacing={3} align={'center'} mb={5}>
+          <Stack spacing={3} align={'left'} mb={5}>
             <Heading fontSize={'2xl'} fontWeight={500} fontFamily={'body'}>
               {name}
             </Heading>
@@ -54,7 +56,7 @@ export default function UserCard({id, name, email, age}) {
               <Tag>Email:</Tag> {email}
             </Text>
             <Text color={'gray.500'}>
-              <Tag>Age:</Tag> {age}
+              <Tag>Age:</Tag> {age} | {gender}
             </Text>
           </Stack>
         </Box>
