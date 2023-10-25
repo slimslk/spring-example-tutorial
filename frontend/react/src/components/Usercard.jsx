@@ -11,15 +11,48 @@ import {
   Stack,
   useColorModeValue,
   Tag,
+  Button,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure
 } from '@chakra-ui/react'
 
-export default function UserCard({id, name, email, age, gender}) {
+import { DeleteIcon } from '@chakra-ui/icons'
+import { deleteCustomer } from '../services/client';
+import { errorMessage, successMessage } from '../services/notification';
+
+import { useRef } from 'react'
+import UpdateCustomerDrawer from './UpdateCustomerDrawer';
+
+export default function UserCard({id, name, email, age, gender, updateCustomers}) {
   
   const userGender = gender === 'MALE' ? 'men' : 'women';
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const cancelRef = useRef()
+
+  const deleteUser = (userId) => {
+    deleteCustomer(userId)
+    .then( res => {
+      successMessage('Customer deleted', `${name} was successfully deleted `)
+      updateCustomers();
+    }
+    )
+    .catch( err => {
+      errorMessage(err.code, err.response.data.message)
+    }).finally ( () => {
+      onClose();
+    })
+  }
 
   return (
     <Center py={6}>
       <Box
+        minW={'300px'}
         maxW={'400px'}
         w={'full'}
         bg={useColorModeValue('white', 'gray.800')}
@@ -58,6 +91,48 @@ export default function UserCard({id, name, email, age, gender}) {
             <Text color={'gray.500'}>
               <Tag>Age:</Tag> {age} | {gender}
             </Text>
+            
+           <UpdateCustomerDrawer
+              customerId = {id}
+              initialValues = {{name, email, age, gender}}
+              updateCustomers={updateCustomers}
+            />
+
+            <Button onClick={onOpen}
+            colorScheme={'red'}
+            leftIcon={<DeleteIcon/>}
+            >
+              Delete customer
+            </Button>
+
+            <AlertDialog
+              isOpen={isOpen}
+              leastDestructiveRef={cancelRef}
+              onClose={onClose}
+            >
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                    Delete Customer
+                  </AlertDialogHeader>
+
+                  <AlertDialogBody>
+                    Are you sure whant to delete <b>{name}</b>? You can't undo this action afterwards.
+                  </AlertDialogBody>
+
+                  <AlertDialogFooter>
+                    <Button ref={cancelRef} onClick={onClose}>
+                      Cancel
+                    </Button>
+                    <Button colorScheme='red' onClick={() => {
+                      deleteUser(id)
+                    }} ml={3}>
+                      Delete
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
           </Stack>
         </Box>
       </Box>
