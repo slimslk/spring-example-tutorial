@@ -1,6 +1,9 @@
 package com.dimm.springbootexample.customer;
 
 import com.dimm.springbootexample.AbstractTestcontainer;
+import com.dimm.springbootexample.customer.dao.ICustomerRepository;
+import com.dimm.springbootexample.customer.entity.Customer;
+import com.dimm.springbootexample.customer.entity.CustomerGender;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,10 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class CustomerRepositoryTest extends AbstractTestcontainer {
+class ICustomerRepositoryTest extends AbstractTestcontainer {
 
 	@Autowired
-	private CustomerRepository underTest;
+	private ICustomerRepository underTest;
 
 	@Autowired
 	ApplicationContext applicationContext;
@@ -50,6 +53,7 @@ class CustomerRepositoryTest extends AbstractTestcontainer {
 		return Customer.builder()
 				.name(faker.name().fullName())
 				.email(faker.internet().emailAddress() + "-" + UUID.randomUUID())
+				.password("password")
 				.age(faker.number().numberBetween(10,90))
 				.gender(CustomerGender.MALE)
 				.build();

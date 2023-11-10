@@ -1,5 +1,6 @@
-package com.dimm.springbootexample.customer;
+package com.dimm.springbootexample.customer.entity;
 
+import com.dimm.springbootexample.customer.entity.CustomerGender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +15,5 @@ public class CustomerRegistrationRequest {
     String email;
     Integer age;
     CustomerGender gender;
+    String password;
 }
