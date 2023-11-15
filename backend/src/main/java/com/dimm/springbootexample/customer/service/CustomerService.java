@@ -1,18 +1,13 @@
 package com.dimm.springbootexample.customer.service;
 
-import com.dimm.springbootexample.auth.AuthenticationRequest;
 import com.dimm.springbootexample.customer.entity.CustomerRegistrationRequest;
 import com.dimm.springbootexample.customer.dao.ICustomerDao;
 import com.dimm.springbootexample.customer.entity.Customer;
 import com.dimm.springbootexample.customer.entity.CustomerDTO;
-import com.dimm.springbootexample.exception.AuthenticateValidationException;
 import com.dimm.springbootexample.exception.RequestValidationException;
 import com.dimm.springbootexample.exception.DuplicateResourceException;
 import com.dimm.springbootexample.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +20,11 @@ public class CustomerService {
 	private final ICustomerDao customerRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final CustomerDTOMapper customerDTOMapper;
-	private final AuthenticationManager authenticationManager;
 
-	public CustomerService(@Qualifier("jpa") ICustomerDao customerRepository, PasswordEncoder passwordEncoder, CustomerDTOMapper customerDTOMapper, AuthenticationManager authenticationManager) {
+	public CustomerService(@Qualifier("jpa") ICustomerDao customerRepository, PasswordEncoder passwordEncoder, CustomerDTOMapper customerDTOMapper) {
 		this.customerRepository = customerRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.customerDTOMapper = customerDTOMapper;
-		this.authenticationManager = authenticationManager;
 	}
 
 	public List<CustomerDTO> getAllCustomers() {
@@ -44,6 +37,12 @@ public class CustomerService {
 				.map(customerDTOMapper)
 				.orElseThrow(
 				() -> new ResourceNotFoundException(String.format("Customer with [%d] id not found", id)));
+	}
+
+	public CustomerDTO getCustomerByUsername (String username) {
+		return customerRepository.findCustomerByEmail(username)
+				.map(customerDTOMapper)
+				.orElseThrow( () -> new ResourceNotFoundException("[%s] not found".formatted(username)));
 	}
 
 	public void insertCustomer(CustomerRegistrationRequest customerRegistrationRequest) {

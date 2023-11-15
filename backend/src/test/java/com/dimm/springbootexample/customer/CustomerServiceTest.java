@@ -37,7 +37,7 @@ class CustomerServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		underTest = new CustomerService(customerDao, passwordEncoder, customerDTOMapper, authenticationManager);
+		underTest = new CustomerService(customerDao, passwordEncoder, customerDTOMapper);
 	}
 
 	@Test
@@ -65,12 +65,39 @@ class CustomerServiceTest {
 	}
 
 	@Test
+	void canGetCustomerByUsername() {
+		String username = "jojo@mojo.com";
+		Customer customer = Customer.builder()
+				.id(1L)
+				.name("Alex")
+				.email(username)
+				.password("password")
+				.age(22)
+				.gender(CustomerGender.MALE)
+				.build();
+		Mockito.when(customerDao.findCustomerByEmail(username)).thenReturn(Optional.of(customer));
+		CustomerDTO expected = customerDTOMapper.apply(customer);
+		CustomerDTO actual = underTest.getCustomerByUsername(username);
+		assertThat(actual).isEqualTo(expected);
+
+	}
+
+	@Test
 	void willThrowExceptionWhenCustomerIsNotFoundById() {
 		Long id = 1L;
 		Mockito.when(customerDao.findCustomerById(id)).thenReturn(Optional.empty());
 		assertThatThrownBy(() -> underTest.getCustomerById(id))
 				.isInstanceOf(ResourceNotFoundException.class)
 				.hasMessage(String.format("Customer with [%d] id not found", id));
+	}
+
+	@Test
+	void willThrowExceptionWhenCustomerIsNotFoundByUsername() {
+		String username = "mojo@gojo.net";
+		Mockito.when(customerDao.findCustomerByEmail(username)).thenReturn(Optional.empty());
+		assertThatThrownBy(() -> underTest.getCustomerByUsername(username))
+				.isInstanceOf(ResourceNotFoundException.class)
+				.hasMessage(String.format("[%s] not found", username));
 	}
 
 	@Test

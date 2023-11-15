@@ -20,9 +20,6 @@ const DrawerForm = ({ updateCustomers }) => {
 
   return (
     <div>
-      <Button leftIcon={<AddIcon/>} colorScheme='teal' onClick={onOpen}>
-          Create user
-      </Button>
         <Drawer
           size={'md'}
           isOpen={isOpen}

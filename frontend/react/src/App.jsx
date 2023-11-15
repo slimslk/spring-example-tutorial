@@ -7,8 +7,8 @@ import {
 import SidebarWithHeader from "./components/shared/SideBar"
 import { getCustomers } from "./services/client"
 import { useEffect, useState } from "react"
-import UserCard from "./components/Usercard";
-import DrawerForm from "./components/CreateCustomerDrawer";
+import UserCard from "./components/customer/Usercard";
+import DrawerForm from "./components/customer/CreateCustomerDrawer";
 import { errorMessage } from "./services/notification";
 
 function App() {

@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNullApi;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
@@ -41,6 +43,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 		if(subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
+			log.warn(userDetails.getUsername());
 			if(jwtUtil.isTokenValid(jwtToken, userDetails.getUsername())) {
 				UsernamePasswordAuthenticationToken authenticationToken =
 						new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

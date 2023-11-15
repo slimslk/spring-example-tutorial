@@ -30,6 +30,11 @@ public class CustomerController {
         return customerService.getCustomerById(id);
     }
 
+    @GetMapping("/users/{username}")
+    public  CustomerDTO getCustomerByUsername(@PathVariable(value = "username") String username) {
+        return customerService.getCustomerByUsername(username);
+    }
+
     @PostMapping
     public ResponseEntity<?> addCustomer(@RequestBody CustomerRegistrationRequest customerDTO) {
         customerService.insertCustomer(customerDTO);

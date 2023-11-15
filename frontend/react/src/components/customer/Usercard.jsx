@@ -22,8 +22,8 @@ import {
 } from '@chakra-ui/react'
 
 import { DeleteIcon } from '@chakra-ui/icons'
-import { deleteCustomer } from '../services/client';
-import { errorMessage, successMessage } from '../services/notification';
+import { deleteCustomer } from '../../services/client';
+import { errorMessage, successMessage } from '../../services/notification';
 
 import { useRef } from 'react'
 import UpdateCustomerDrawer from './UpdateCustomerDrawer';

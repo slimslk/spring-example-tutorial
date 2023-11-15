@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 class CustomerJpaDataAccessRepositoryTest {
 
 	private CustomerJpaDataAccessRepository underTest;
+
 	@Mock
 	private ICustomerRepository ICustomerRepository;
 
@@ -42,6 +43,13 @@ class CustomerJpaDataAccessRepositoryTest {
 		Long id = 1L;
 		underTest.findCustomerById(id);
 		Mockito.verify(ICustomerRepository).findById(id);
+	}
+
+	@Test
+	void findCustomerByEmail() {
+		String email = "jojo@momo.com";
+		underTest.findCustomerByEmail(email);
+		Mockito.verify(ICustomerRepository).findCustomerByEmail(email);
 	}
 
 	@Test

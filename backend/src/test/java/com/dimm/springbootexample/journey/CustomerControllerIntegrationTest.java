@@ -52,7 +52,7 @@ public class CustomerControllerIntegrationTest {
 				.body(Mono.just(request), CustomerRegistrationRequest.class)
 				.exchange()
 				.expectStatus()
-				.isOk()
+				.isCreated()
 				.returnResult(Void.class)
 				.getResponseHeaders()
 				.get(HttpHeaders.AUTHORIZATION)
@@ -134,7 +134,7 @@ public class CustomerControllerIntegrationTest {
 				.body(Mono.just(customerRequest1), CustomerRegistrationRequest.class)
 				.exchange()
 				.expectStatus()
-				.isOk();
+				.isCreated();
 		//create customer 2 and remember auth token
 
 		firstName = faker.name().firstName();
@@ -159,7 +159,7 @@ public class CustomerControllerIntegrationTest {
 				.body(Mono.just(customerRequest2), CustomerRegistrationRequest.class)
 				.exchange()
 				.expectStatus()
-				.isOk()
+				.isCreated()
 				.returnResult(Void.class)
 				.getResponseHeaders()
 				.get(HttpHeaders.AUTHORIZATION)
@@ -225,7 +225,7 @@ public class CustomerControllerIntegrationTest {
 				.body(Mono.just(customer), CustomerRegistrationRequest.class)
 				.exchange()
 				.expectStatus()
-				.isOk()
+				.isCreated()
 				.returnResult(Void.class)
 				.getResponseHeaders()
 				.get(HttpHeaders.AUTHORIZATION)

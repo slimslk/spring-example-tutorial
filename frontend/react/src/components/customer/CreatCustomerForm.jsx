@@ -1,28 +1,11 @@
 
-import { Alert, AlertDescription, AlertIcon, Box, FormLabel, Input, Select, Stack,
-} from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Box, FormLabel, Input, Select, Stack } from '@chakra-ui/react';
 import { Formik, Form, useField } from 'formik';
 import * as Yup from 'yup';
-import { errorMessage, successMessage } from '../services/notification';
-import { updateCustomer } from "../services/client";
+import { createNewCustomer } from '../../services/client';
+import { errorMessage, successMessage } from '../../services/notification';
+import MyTextInput from '../shared/MyTextInput';
 
-const MyTextInput = ({ label, ...props }) => {
-    const [field, meta] = useField(props);
-    return (
-      <Box>
-        <FormLabel htmlFor={props.id || props.name}>{label}</FormLabel>
-        <Input className="text-input" {...field} {...props} />
-        {meta.touched && meta.error ? (
-        <Alert className="error" status='error'>
-            <AlertIcon/>
-            <AlertDescription>{meta.error}</AlertDescription>
-        </Alert>
-        ) : null}
-      </Box>
-    );
-  };
-  
-  
   const MySelect = ({ label, ...props }) => {
     const [field, meta] = useField(props);
     return (
@@ -42,16 +25,15 @@ const MyTextInput = ({ label, ...props }) => {
   };
   
   // And now we can use these
-  const UpdateCustomerForm = ( {customerId, initialValues, updateCustomers }) => {
-
+  const SignupForm = ( { updateCustomers }) => {
     return (
       <>
         <Formik
           initialValues={{
-            name: initialValues.name,
-            email: initialValues.email,
-            age: initialValues.age,
-            gender: initialValues.gender, // added for our select
+            name: '',
+            email: '',
+            age: 0,
+            gender: '', // added for our select
           }}
           validationSchema={Yup.object({
             name: Yup.string()
@@ -73,9 +55,9 @@ const MyTextInput = ({ label, ...props }) => {
               .required('Required'),
           })}
           onSubmit={( customer ) => {
-            updateCustomer(customerId, customer)
+            createNewCustomer(customer)
             .then(res => {
-                successMessage('Customer updated', `Customer was successfully updated`);
+                successMessage('Customer created', `Customer was successfully created`);
                 updateCustomers();
             })
             .catch(error => {
@@ -87,7 +69,7 @@ const MyTextInput = ({ label, ...props }) => {
             })
           }}
         >
-          <Form id='update-customer-form'>
+          <Form id='create-customer-form'>
             <Stack spacing={5}>
                 <MyTextInput
                 label="Name"
@@ -122,4 +104,4 @@ const MyTextInput = ({ label, ...props }) => {
     );
 };
 
-export default UpdateCustomerForm;
+export default SignupForm;

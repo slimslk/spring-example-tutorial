@@ -55,9 +55,34 @@ class CustomerJDBCDataAccessDaoImplTest extends AbstractTestcontainer {
 	}
 
 	@Test
+	void findCustomerByEmail() {
+		Customer customer = createNewCustomer();
+		String email = customer.getEmail();
+		underTest.insertCustomer(customer);
+		Long id = getCustomerIdFromDatabaseByEmail(email);
+		Optional<Customer> actual = underTest.findCustomerByEmail(email);
+
+		assertThat(actual).isNotEmpty().hasValueSatisfying(c-> {
+			assertThat(c.getId()).isEqualTo(id);
+			assertThat(c.getName()).isEqualTo(customer.getName());
+			assertThat(c.getEmail()).isEqualTo(customer.getEmail());
+			assertThat(c.getPassword()).isEqualTo(customer.getPassword());
+			assertThat(c.getAge()).isEqualTo(customer.getAge());
+			assertThat(c.getGender()).isEqualTo(customer.getGender());
+		});
+	}
+
+	@Test
 	void willReturnEmptyWhenSelectCustomerById(){
 		Long id =-1L;
 		Optional<Customer> actual = underTest.findCustomerById(id);
+		assertThat(actual).isEmpty();
+	}
+
+	@Test
+	void willReturnEmptyWhenSelectCustomerByUsername(){
+		String username = "aaa";
+		Optional<Customer> actual = underTest.findCustomerByEmail(username);
 		assertThat(actual).isEmpty();
 	}
 

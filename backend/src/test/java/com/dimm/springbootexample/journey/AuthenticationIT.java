@@ -46,8 +46,10 @@ public class AuthenticationIT {
 				.body(Mono.just(request), CustomerRegistrationRequest.class)
 				.exchange()
 				.expectStatus()
-				.isOk()
+				.isCreated()
 				.returnResult(Void.class)
 				.getResponseHeaders()
 				.get(HttpHeaders.AUTHORIZATION)
-				.get(0);}
+				.get(0);
+	}
+}
