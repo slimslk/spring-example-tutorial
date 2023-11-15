@@ -1,6 +1,6 @@
 services:
   db:
-    container_name: postgres
+    container_name: postgres-15-4
     image: postgres:15.4
     restart: unless-stopped
     environment:
@@ -15,7 +15,7 @@ services:
       - db
   dimm-api:
     container_name: dimm-api
-    image: slimslk/dimm-api
+    image: slimslk/customer-api:v2.1.0
     restart: unless-stopped
     depends_on:
       - db
@@ -25,18 +25,18 @@ services:
       - db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/customer
-  dimm-react:
-    container_name: dimm-react
-    image: slimslk/dimm-react
-#    build:
-#      context: frontend/react
-#      args:
-#        api_base_url: http://localhost:8088
-    restart: unless-stopped
-    depends_on:
-      - dimm-api
-    ports:
-      - "3000:5173"
+#  dimm-react:
+#    container_name: dimm-react
+#    image: slimslk/dimm-react
+##    build:
+##      context: frontend/react
+##      args:
+##        api_base_url: http://localhost:8088
+#    restart: unless-stopped
+#    depends_on:
+#      - dimm-api
+#    ports:
+#      - "3000:5173"
 networks:
   db:
     driver: bridge
