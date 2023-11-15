@@ -62,7 +62,7 @@ jobs:
           '{"text":"Build is completed and new image with tag: ${{steps.build-version.outputs.BUILD_VERSION}} uploaded to dockerhub"}'
           ${{ secrets.SLACK_WEBHOOK_TOKEN }}
       - name: Update Dockerrun.aws.json file with new image tag
-        working-directory: ..
+#        working-directory: ..
         run: |
           ls
           echo "Dockerrun.aws.json before updating"
