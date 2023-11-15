@@ -11,7 +11,7 @@ public class PingPongController {
 	@GetMapping("/ping")
 	public PingPong getPongResponse(){
 		++COUNT;
-		return new PingPong("ping-pong: " + COUNT);
+		return new PingPong("pong: " + COUNT);
 	}
 
 }
