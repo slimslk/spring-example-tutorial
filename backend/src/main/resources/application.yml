@@ -12,7 +12,7 @@ cors:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/customer
-    username: dimm
+    username: postgres
     password: cghbyu-trpfvgk
   jpa:
     hibernate:
