@@ -1,29 +1,48 @@
-package com.dimm.springbootexample.customer;
+package com.dimm.springbootexample.customer.service;
 
+import com.dimm.springbootexample.customer.entity.CustomerRegistrationRequest;
+import com.dimm.springbootexample.customer.dao.ICustomerDao;
+import com.dimm.springbootexample.customer.entity.Customer;
+import com.dimm.springbootexample.customer.entity.CustomerDTO;
 import com.dimm.springbootexample.exception.RequestValidationException;
 import com.dimm.springbootexample.exception.DuplicateResourceException;
 import com.dimm.springbootexample.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerService {
 
 	private final ICustomerDao customerRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final CustomerDTOMapper customerDTOMapper;
 
-	public CustomerService(@Qualifier("jpa") ICustomerDao customerRepository) {
+	public CustomerService(@Qualifier("jpa") ICustomerDao customerRepository, PasswordEncoder passwordEncoder, CustomerDTOMapper customerDTOMapper) {
 		this.customerRepository = customerRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.customerDTOMapper = customerDTOMapper;
 	}
 
-	public List<Customer> getAllCustomers() {
-		return customerRepository.findAll();
+	public List<CustomerDTO> getAllCustomers() {
+		List<Customer> customers = customerRepository.findAll();
+		return customers.stream().map(customerDTOMapper).collect(Collectors.toList());
 	}
 
-	public Customer getCustomerById(long id) {
-		return customerRepository.findCustomerById(id).orElseThrow(
+	public CustomerDTO getCustomerById(long id) {
+		return customerRepository.findCustomerById(id)
+				.map(customerDTOMapper)
+				.orElseThrow(
 				() -> new ResourceNotFoundException(String.format("Customer with [%d] id not found", id)));
+	}
+
+	public CustomerDTO getCustomerByUsername (String username) {
+		return customerRepository.findCustomerByEmail(username)
+				.map(customerDTOMapper)
+				.orElseThrow( () -> new ResourceNotFoundException("[%s] not found".formatted(username)));
 	}
 
 	public void insertCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
@@ -32,10 +51,11 @@ public class CustomerService {
 			throw new DuplicateResourceException("Email already taken");
 		}
 		Customer customer = Customer.builder()
-				.name(customerRegistrationRequest.name)
+				.name(customerRegistrationRequest.getName())
 				.email(customerRegistrationRequest.getEmail())
 				.age(customerRegistrationRequest.getAge())
 				.gender(customerRegistrationRequest.getGender())
+				.password(passwordEncoder.encode(customerRegistrationRequest.getPassword()))
 				.build();
 		customerRepository.insertCustomer(customer);
 	}

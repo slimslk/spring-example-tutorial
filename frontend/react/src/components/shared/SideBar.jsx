@@ -19,7 +19,7 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
-  Image
+  Image,
 } from '@chakra-ui/react'
 import {
   FiHome,
@@ -31,8 +31,8 @@ import {
   FiBell,
   FiChevronDown,
 } from 'react-icons/fi'
-
-
+import { useAuth } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 const LinkItems = [
   { name: 'Home', icon: FiHome },
@@ -110,7 +110,12 @@ const NavItem = ({ icon, children, ...rest }) => {
 }
 
 const MobileNav = ({ onOpen, ...rest }) => {
+
+  const { customer, logout } = useAuth();
+  const navigate = useNavigate();
+
   return (
+
     <Flex
       ml={{ base: 0, md: 60 }}
       px={{ base: 4, md: 4 }}
@@ -154,7 +159,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
                   alignItems="flex-start"
                   spacing="1px"
                   ml="2">
-                  <Text fontSize="sm">Justina Clark</Text>
+                  <Text fontSize="sm">{customer?.name}</Text>
                   <Text fontSize="xs" color="gray.600">
                     Admin
                   </Text>
@@ -167,11 +172,12 @@ const MobileNav = ({ onOpen, ...rest }) => {
             <MenuList
               bg={useColorModeValue('white', 'gray.900')}
               borderColor={useColorModeValue('gray.200', 'gray.700')}>
-              <MenuItem>Profile</MenuItem>
-              <MenuItem>Settings</MenuItem>
-              <MenuItem>Billing</MenuItem>
               <MenuDivider />
-              <MenuItem>Sign out</MenuItem>
+              <MenuItem onClick={ () => {
+                logout()
+                navigate("/login")
+              }
+              }>Logout</MenuItem>
             </MenuList>
           </Menu>
         </Flex>
@@ -206,4 +212,4 @@ const SidebarWithHeader = ({children}) => {
   )
 }
 
-export default SidebarWithHeader
+export default SidebarWithHeader;

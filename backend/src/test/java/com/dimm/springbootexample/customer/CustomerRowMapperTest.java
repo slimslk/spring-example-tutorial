@@ -1,5 +1,8 @@
 package com.dimm.springbootexample.customer;
 
+import com.dimm.springbootexample.customer.entity.Customer;
+import com.dimm.springbootexample.customer.entity.CustomerGender;
+import com.dimm.springbootexample.customer.util.CustomerRowMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -18,6 +21,7 @@ class CustomerRowMapperTest {
 		Mockito.when(resultSet.getLong("id")).thenReturn(1L);
 		Mockito.when(resultSet.getString("name")).thenReturn("Alex");
 		Mockito.when(resultSet.getString("email")).thenReturn("alex@gmail.com");
+		Mockito.when(resultSet.getString("password")).thenReturn("password");
 		Mockito.when(resultSet.getInt("age")).thenReturn(22);
 		Mockito.when(resultSet.getString("gender")).thenReturn(String.valueOf(CustomerGender.MALE));
 
@@ -26,6 +30,7 @@ class CustomerRowMapperTest {
 				.id(1L)
 				.name("Alex")
 				.email("alex@gmail.com")
+				.password("password")
 				.age(22)
 				.gender(CustomerGender.MALE)
 				.build();
