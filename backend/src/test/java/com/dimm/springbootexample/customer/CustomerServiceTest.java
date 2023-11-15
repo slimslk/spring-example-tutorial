@@ -1,5 +1,12 @@
 package com.dimm.springbootexample.customer;
 
+import com.dimm.springbootexample.customer.dao.ICustomerDao;
+import com.dimm.springbootexample.customer.entity.Customer;
+import com.dimm.springbootexample.customer.entity.CustomerGender;
+import com.dimm.springbootexample.customer.entity.CustomerRegistrationRequest;
+import com.dimm.springbootexample.customer.entity.CustomerDTO;
+import com.dimm.springbootexample.customer.service.CustomerDTOMapper;
+import com.dimm.springbootexample.customer.service.CustomerService;
 import com.dimm.springbootexample.exception.DuplicateResourceException;
 import com.dimm.springbootexample.exception.RequestValidationException;
 import com.dimm.springbootexample.exception.ResourceNotFoundException;
@@ -10,6 +17,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -19,13 +27,17 @@ import static org.mockito.ArgumentMatchers.any;
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceTest {
 
-	private  CustomerService underTest;
+	private CustomerService underTest;
 	@Mock
 	private ICustomerDao customerDao;
+	@Mock
+	PasswordEncoder passwordEncoder;
+
+	private final CustomerDTOMapper customerDTOMapper = new CustomerDTOMapper();
 
 	@BeforeEach
 	void setUp() {
-		underTest = new CustomerService(customerDao);
+		underTest = new CustomerService(customerDao, passwordEncoder, customerDTOMapper);
 	}
 
 	@Test
@@ -37,10 +49,36 @@ class CustomerServiceTest {
 	@Test
 	void canGetCustomerById() {
 		Long id = 1L;
-		Customer customer = Customer.builder().id(id).name("Alex").email("alex@gmail.com").age(22).build();
+		Customer customer = Customer.builder()
+				.id(id)
+				.name("Alex")
+				.email("alex@gmail.com")
+				.password("password")
+				.age(22)
+				.gender(CustomerGender.MALE)
+				.build();
 		Mockito.when(customerDao.findCustomerById(id)).thenReturn(Optional.of(customer));
-		Customer actual = underTest.getCustomerById(id);
-		assertThat(actual).isEqualTo(customer);
+		CustomerDTO expected = customerDTOMapper.apply(customer);
+		CustomerDTO actual = underTest.getCustomerById(id);
+		assertThat(actual).isEqualTo(expected);
+
+	}
+
+	@Test
+	void canGetCustomerByUsername() {
+		String username = "jojo@mojo.com";
+		Customer customer = Customer.builder()
+				.id(1L)
+				.name("Alex")
+				.email(username)
+				.password("password")
+				.age(22)
+				.gender(CustomerGender.MALE)
+				.build();
+		Mockito.when(customerDao.findCustomerByEmail(username)).thenReturn(Optional.of(customer));
+		CustomerDTO expected = customerDTOMapper.apply(customer);
+		CustomerDTO actual = underTest.getCustomerByUsername(username);
+		assertThat(actual).isEqualTo(expected);
 
 	}
 
@@ -54,25 +92,32 @@ class CustomerServiceTest {
 	}
 
 	@Test
+	void willThrowExceptionWhenCustomerIsNotFoundByUsername() {
+		String username = "mojo@gojo.net";
+		Mockito.when(customerDao.findCustomerByEmail(username)).thenReturn(Optional.empty());
+		assertThatThrownBy(() -> underTest.getCustomerByUsername(username))
+				.isInstanceOf(ResourceNotFoundException.class)
+				.hasMessage(String.format("[%s] not found", username));
+	}
+
+	@Test
 	void canInsertCustomer() {
 		String email = "alex@gmail.com";
 		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(
-				"Alex", email, 22, CustomerGender.MALE);
+				"Alex", email, 22, CustomerGender.MALE, "password");
 		Mockito.when(customerDao.isExistsCustomerByEmail(email)).thenReturn(false);
-		Customer customer = Customer.builder()
-				.id(null)
-				.name(customerRegistration.getName())
-				.email(customerRegistration.getEmail())
-				.age(customerRegistration.getAge())
-				.gender(customerRegistration.getGender())
-				.build();
+		String passwordHash = "aqe%1313";
+		Mockito.when(passwordEncoder.encode(any())).thenReturn(passwordHash);
+
 		underTest.insertCustomer(customerRegistration);
 		ArgumentCaptor<Customer> argumentCaptor = ArgumentCaptor.forClass(Customer.class);
 		Mockito.verify(customerDao).insertCustomer(argumentCaptor.capture());
 		Customer capturedCustomer = argumentCaptor.getValue();
 		assertThat(capturedCustomer.getName()).isEqualTo(customerRegistration.getName());
 		assertThat(capturedCustomer.getEmail()).isEqualTo(customerRegistration.getEmail());
+		assertThat(capturedCustomer.getPassword()).isEqualTo(passwordHash);
 		assertThat(capturedCustomer.getAge()).isEqualTo(customerRegistration.getAge());
+		assertThat(capturedCustomer.getGender()).isEqualTo(customerRegistration.getGender());
 	}
 
 	@Test
@@ -81,7 +126,7 @@ class CustomerServiceTest {
 		Mockito.when(customerDao.isExistsCustomerByEmail(email)).thenReturn(true);
 		assertThatThrownBy(() -> {
 			underTest.insertCustomer(
-					new CustomerRegistrationRequest("Alex", email, 22, CustomerGender.MALE)
+					new CustomerRegistrationRequest("Alex", email, 22, CustomerGender.MALE,"password")
 			);
 		}).isInstanceOf(DuplicateResourceException.class).hasMessage("Email already taken");
 		Mockito.verify(customerDao, Mockito.never()).insertCustomer(any());
@@ -111,11 +156,12 @@ class CustomerServiceTest {
 		Long id = 1L;
 		String email = "alex@gmail.com";
 		String updatedEmail = "joe@gmail.com";
-		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", updatedEmail, 22, CustomerGender.MALE);
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", updatedEmail, 22, CustomerGender.MALE, "password");
 		Customer customer = Customer.builder()
 				.id(id)
 				.name("Joe")
 				.email(email)
+				.password("password")
 				.age(23)
 				.gender(CustomerGender.MALE)
 				.build();
@@ -129,6 +175,7 @@ class CustomerServiceTest {
 		assertThat(capturedCustomer.getId()).isEqualTo(id);
 		assertThat(capturedCustomer.getName()).isEqualTo(customerRegistration.getName());
 		assertThat(capturedCustomer.getEmail()).isEqualTo(customerRegistration.getEmail());
+		assertThat(capturedCustomer.getPassword()).isEqualTo(customerRegistration.getPassword());
 		assertThat(capturedCustomer.getAge()).isEqualTo(customerRegistration.getAge());
 		assertThat(capturedCustomer.getGender()).isEqualTo(customerRegistration.getGender());
 
@@ -138,11 +185,12 @@ class CustomerServiceTest {
 	void canUpdateCustomerByIdWhenNamesAreDifferent() {
 		Long id = 1L;
 		String email = "alex@gmail.com";
-		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", null, null, null);
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", null, null, null, null);
 		Customer customer = Customer.builder()
 				.id(id)
 				.name("Joe")
 				.email(email)
+				.password("password")
 				.age(23)
 				.gender(CustomerGender.MALE)
 				.build();
@@ -156,6 +204,7 @@ class CustomerServiceTest {
 		assertThat(capturedCustomer.getId()).isEqualTo(id);
 		assertThat(capturedCustomer.getName()).isEqualTo(customerRegistration.getName());
 		assertThat(capturedCustomer.getEmail()).isEqualTo(customer.getEmail());
+		assertThat(capturedCustomer.getPassword()).isEqualTo(customer.getPassword());
 		assertThat(capturedCustomer.getAge()).isEqualTo(customer.getAge());
 		assertThat(capturedCustomer.getGender()).isEqualTo(customer.getGender());
 	}
@@ -165,11 +214,12 @@ class CustomerServiceTest {
 		Long id = 1L;
 		String email = "alex@gmail.com";
 		String updatedEmail = "joe@gmail.com";
-		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(null, updatedEmail, null, null);
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(null, updatedEmail, null, null, null);
 		Customer customer = Customer.builder()
 				.id(id)
 				.name("Alex")
 				.email(email)
+				.password("password")
 				.age(23)
 				.gender(CustomerGender.MALE)
 				.build();
@@ -184,6 +234,7 @@ class CustomerServiceTest {
 		assertThat(capturedCustomer.getId()).isEqualTo(id);
 		assertThat(capturedCustomer.getName()).isEqualTo(customer.getName());
 		assertThat(capturedCustomer.getEmail()).isEqualTo(customerRegistration.getEmail());
+		assertThat(capturedCustomer.getPassword()).isEqualTo(customer.getPassword());
 		assertThat(capturedCustomer.getAge()).isEqualTo(customer.getAge());
 		assertThat(capturedCustomer.getGender()).isEqualTo(customer.getGender());
 	}
@@ -192,11 +243,12 @@ class CustomerServiceTest {
 	void canUpdateCustomerByIdWhenAgesAreDifferent() {
 		Long id = 1L;
 		String email = "alex@gmail.com";
-		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(null, null, 22, null);
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(null, null, 22, null, null);
 		Customer customer = Customer.builder()
 				.id(id)
 				.name("Alex")
 				.email(email)
+				.password("password")
 				.age(23)
 				.gender(CustomerGender.MALE)
 				.build();
@@ -210,6 +262,7 @@ class CustomerServiceTest {
 		assertThat(capturedCustomer.getId()).isEqualTo(id);
 		assertThat(capturedCustomer.getName()).isEqualTo(customer.getName());
 		assertThat(capturedCustomer.getEmail()).isEqualTo(customer.getEmail());
+		assertThat(capturedCustomer.getPassword()).isEqualTo(customer.getPassword());
 		assertThat(capturedCustomer.getAge()).isEqualTo(customerRegistration.getAge());
 		assertThat(capturedCustomer.getGender()).isEqualTo(customer.getGender());
 	}
@@ -218,11 +271,12 @@ class CustomerServiceTest {
 	void canUpdateCustomerByIdWhenGendersAreDifferent() {
 		Long id = 1L;
 		String email = "alex@gmail.com";
-		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(null, null, null, CustomerGender.FEMALE);
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest(null, null, null, CustomerGender.FEMALE, null);
 		Customer customer = Customer.builder()
 				.id(id)
 				.name("Alex")
 				.email(email)
+				.password("password")
 				.age(23)
 				.gender(CustomerGender.MALE)
 				.build();
@@ -236,6 +290,7 @@ class CustomerServiceTest {
 		assertThat(capturedCustomer.getId()).isEqualTo(id);
 		assertThat(capturedCustomer.getName()).isEqualTo(customer.getName());
 		assertThat(capturedCustomer.getEmail()).isEqualTo(customer.getEmail());
+		assertThat(capturedCustomer.getPassword()).isEqualTo(customer.getPassword());
 		assertThat(capturedCustomer.getAge()).isEqualTo(customer.getAge());
 		assertThat(capturedCustomer.getGender()).isEqualTo(customerRegistration.getGender());
 	}
@@ -245,11 +300,12 @@ class CustomerServiceTest {
 		Long id = 1L;
 		String email = "alex@gmail.com";
 		String updatedEmail = "joe@gmail.com";
-		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", updatedEmail, 22, CustomerGender.MALE);
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", updatedEmail, 22, CustomerGender.MALE, "newPassword");
 		Customer customer = Customer.builder()
 				.id(id)
 				.name("Joe")
 				.email(email)
+				.password("password")
 				.age(23)
 				.gender(CustomerGender.MALE)
 				.build();
@@ -280,11 +336,12 @@ class CustomerServiceTest {
 	void canUpdateCustomerByIdWhenAllFieldsAreSame() {
 		Long id = 1L;
 		String email = "joe@gmail.com";
-		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", email, 22, CustomerGender.MALE);
+		CustomerRegistrationRequest customerRegistration = new CustomerRegistrationRequest("Alex", email, 22, CustomerGender.MALE, "newPassword");
 		Customer customer = Customer.builder()
 				.id(id)
 				.name(customerRegistration.getName())
 				.email(customerRegistration.getEmail())
+				.password(customerRegistration.getPassword())
 				.age(customerRegistration.getAge())
 				.gender(CustomerGender.MALE)
 				.build();

@@ -1,13 +1,10 @@
 package com.dimm.springbootexample;
 
-import com.dimm.springbootexample.customer.Customer;
-import com.dimm.springbootexample.customer.CustomerGender;
-import com.dimm.springbootexample.customer.CustomerRegistrationRequest;
-import com.dimm.springbootexample.customer.CustomerService;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.dimm.springbootexample.customer.entity.CustomerGender;
+import com.dimm.springbootexample.customer.entity.CustomerRegistrationRequest;
+import com.dimm.springbootexample.customer.service.CustomerService;
 import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +27,7 @@ public class InsertRandomCustomer {
 	@GetMapping("/random")
 	public void insertRandomCustomerToDB() throws ExecutionException, InterruptedException {
 
-		CompletableFuture<RandomUser> future = JsonBodyAsMap(URI.create("https://randomuser.me/api/?inc=gender,name"));
+		CompletableFuture<RandomUser> future = jsonBodyAsMap(URI.create("https://randomuser.me/api/?inc=gender,name"));
 		RandomUser randomUser = future.get();
 		String firstName = randomUser.name().get("first");
 		String lastName = randomUser.name().get("last");
@@ -44,7 +41,7 @@ public class InsertRandomCustomer {
 		customerService.insertCustomer(customer);
 	}
 
-	private CompletableFuture<RandomUser> JsonBodyAsMap (URI uri) {
+	private CompletableFuture<RandomUser> jsonBodyAsMap(URI uri) {
 		UncheckedObjectMapper objectMapper = new UncheckedObjectMapper();
 		HttpRequest request = HttpRequest.newBuilder(uri)
 				.header("Accept", "application/json")
