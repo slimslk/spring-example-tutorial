@@ -11,7 +11,7 @@ import UserCard from "./components/customer/Usercard";
 import DrawerForm from "./components/customer/CreateCustomerDrawer";
 import { errorMessage } from "./services/notification";
 
-function App() {
+function Customer() {
 
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -77,4 +77,4 @@ function App() {
     </Wrap>
   </SidebarWithHeader>
 )}
-export default App
+export default Customer

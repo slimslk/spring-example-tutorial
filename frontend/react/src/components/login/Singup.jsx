@@ -56,7 +56,7 @@ const LoginForm = () => {
                 }
                 console.log(singupValues)
                 singup(singupValues).then(res => {
-                    navigate("/dashboard")
+                    navigate("/dashboard/customers")
                     console.log(res);
                 }).catch(err => {
                     errorMessage("Bad credentials", "Username or password are incorrect");
