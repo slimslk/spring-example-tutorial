@@ -2,40 +2,28 @@
   "AWSEBDockerrunVersion": 2,
   "containerDefinitions": [
     {
-      "name": "dimm-react",
-      "image": "slimslk/dimm-react:latest",
-      "essential": true,
-      "memory": 256,
-      "portMappings": [
-        {
-          "hostPort": 80,
-          "containerPort": 5173
-        }
-      ]
-    },
-    {
       "name": "dimm-api",
       "image": "slimslk/dimm-api:15.11.2023.20.47.01",
       "essential": true,
       "memory": 512,
       "portMappings": [
         {
-          "hostPort": 8080,
+          "hostPort": 80,
           "containerPort": 8080
         }
       ],
       "environment": [
         {
           "name": "SPRING_DATASOURCE_URL",
-          "value": "jdbc:postgresql://spring-example-db.cbyncnfz5wn7.eu-north-1.rds.amazonaws.com:5432/customer"
+          "value": "jdbc:postgresql://spring-customer-api.cfprqzallqxk.eu-central-1.rds.amazonaws.com:5432/customer"
         },
         {
           "name": "SPRING_DATASOURCE_USERNAME",
-          "value": "dimm"
+          "value": "postgres"
         },
         {
           "name": "SPRING_DATASOURCE_PASSWORD",
-          "value": "cghbyu-trpfvgk"
+          "value": "Cghbyu-recnjvth-fgb"
         }
       ]
     }
