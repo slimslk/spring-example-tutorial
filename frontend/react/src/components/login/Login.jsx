@@ -103,7 +103,7 @@ const  Login = () => {
           </Stack>
           <Stack mt={4} alignContent={"center"} justifyContent={"center"}>
             <Text>
-                Don't have an account? <Link color="blue.600" href='/singup'>Create an account</Link>
+                Don't have an account? <Link color="blue.600" href='/signup'>Create an account</Link>
             </Text>
           </Stack>
         </Box>
