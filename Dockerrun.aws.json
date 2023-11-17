@@ -15,7 +15,7 @@
     },
     {
       "name": "dimm-api",
-      "image": "slimslk/dimm-api:18.10.2023.15.58.00",
+      "image": "slimslk/dimm-api:15.11.2023.20.47.01",
       "essential": true,
       "memory": 512,
       "portMappings": [

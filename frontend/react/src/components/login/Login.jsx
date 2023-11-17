@@ -44,7 +44,7 @@ const LoginForm = () => {
             onSubmit={ (values, {setSubmitting}) => {
                 setSubmitting(true)
                 login(values).then(res => {
-                    navigate("/dashboard")
+                    navigate("/dashboard/customers")
                 }).catch(err => {
                     errorMessage(err.code, "Username or password are incorrect");
                 }).finally(() => {

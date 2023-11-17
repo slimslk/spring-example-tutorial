@@ -20,7 +20,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<docker.username>slimslk</docker.username>
-		<docker.image.name>customer-api</docker.image.name>
+		<docker.image.name>dimm-api</docker.image.name>
 		<docker.image.tag>v1.0.0</docker.image.tag>
 		<jsonwebtoken.version>0.12.3</jsonwebtoken.version>
 	</properties>

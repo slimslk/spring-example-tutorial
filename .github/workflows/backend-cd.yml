@@ -39,7 +39,7 @@ jobs:
       - name: Send message to Slack with commit and sha
         run: >
           curl -X POST -H 'Content-type: application/json' --data
-          '{"text":"github: https://github.com/slimslk/spring-example-tutorial/commit/${{ github.sha }} - ${{ github.event.head_commit.message }}"}'
+          '{"text":":github: https://github.com/slimslk/spring-example-tutorial/commit/${{ github.sha }} - ${{ github.event.head_commit.message }}"}'
           ${{ secrets.SLACK_WEBHOOK_TOKEN }}
       - uses: actions/setup-java@v3
         with:
@@ -62,6 +62,7 @@ jobs:
           '{"text":"Build is completed and new image with tag: ${{steps.build-version.outputs.BUILD_VERSION}} uploaded to dockerhub"}'
           ${{ secrets.SLACK_WEBHOOK_TOKEN }}
       - name: Update Dockerrun.aws.json file with new image tag
+        working-directory: .
         run: |
           echo "Dockerrun.aws.json before updating"
           cat Dockerrun.aws.json
@@ -78,7 +79,7 @@ jobs:
           version_description: ${{ github.SHA }}
           version_label: ${{ steps.build-version.outputs.BUILD_VERSION }}
           region: ${{ secrets.AWS_REGION }}
-          deployment_package: backend/Dockerrun.aws.json
+          deployment_package: Dockerrun.aws.json
       - name: Send Message to Slack that Deployment to AWS completed
         run: >
           curl -X POST -H 'Content-type: application/json' --data
@@ -88,6 +89,7 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add .
+          git status
+          git add --all
           git commit -m "Update Dockerrun.aws.json docker image with new tag ${{steps.build-version.outputs.BUILD_VERSION}}"
           git push
